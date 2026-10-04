@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Výzkum – test pozornosti</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Štítek testovacího režimu (zobrazí se jen s ?test=1) -->
+  <div id="test-label" class="corner corner-tl hidden">TESTOVACÍ REŽIM</div>
+
+  <!-- ============ 0. PŘÍPRAVA (pro experimentátora) ============ -->
+  <section id="scr-prep" class="screen">
+    <div class="panel">
+      <h1>Příprava testu</h1>
+      <p class="muted">Zkontrolujte, že je zvuk počítače zapnutý na maximum.
+        Pak klikněte na tlačítko níže a odejděte z místnosti.</p>
+      <button id="btn-prepare" class="btn-main" type="button">Připravit test pro účastníka</button>
+      <p id="prep-msg" class="muted small"></p>
+    </div>
+    <div class="corner corner-tr small">
+      <div id="sheets-indicator">Google Sheets: …</div>
+      <a href="#" id="link-sound-test">Test zvuku</a>
+      <span class="sep">|</span>
+      <a href="?admin=1" id="link-admin">Administrace</a>
+    </div>
+  </section>
+
+  <!-- ============ 1. ÚVOD A ÚDAJE ============ -->
+  <section id="scr-intro" class="screen">
+    <div class="panel">
+      <p id="intro-text" class="lead"></p>
+
+      <div class="field">
+        <label for="inp-age">Věk</label>
+        <input id="inp-age" type="number" inputmode="numeric" min="15" max="99" step="1" autocomplete="off">
+        <div id="age-error" class="error small"></div>
+      </div>
+
+      <div class="field">
+        <span class="label">Pohlaví</span>
+        <div class="radio-row" role="radiogroup">
+          <label><input type="radio" name="gender" value="zena"> žena</label>
+          <label><input type="radio" name="gender" value="muz"> muž</label>
+          <label><input type="radio" name="gender" value="jine"> jiné</label>
+          <label><input type="radio" name="gender" value="nechci_uvest"> nechci uvést</label>
+        </div>
+      </div>
+
+      <button id="btn-intro" class="btn-main" type="button" disabled>Pokračovat</button>
+    </div>
+  </section>
+
+  <!-- ============ 2. INSTRUKTÁŽNÍ VIDEO ============ -->
+  <section id="scr-video" class="screen">
+    <div class="panel panel-wide">
+      <h2 id="video-title"></h2>
+      <div id="video-wrap">
+        <video id="video" controls playsinline preload="auto"
+               controlslist="nodownload nofullscreen noremoteplayback"
+               disablepictureinpicture></video>
+      </div>
+      <div id="video-fallback" class="instructions hidden"></div>
+      <p id="video-hint" class="muted"></p>
+      <button id="btn-video" class="btn-main" type="button" disabled>Pokračovat</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. SHRNUTÍ INSTRUKCÍ ============ -->
+  <section id="scr-instr" class="screen">
+    <div class="panel">
+      <div id="instr-text" class="instructions"></div>
+      <button id="btn-start" class="btn-main" type="button">Začít</button>
+    </div>
+  </section>
+
+  <!-- ============ 4 + 6. KOLO TESTU ============ -->
+  <section id="scr-task" class="screen">
+    <div id="stim-area">
+      <div id="fixation">+</div>
+      <div id="word"></div>
+    </div>
+    <div id="answer-row"><!-- tlačítka vytvoří app.js --></div>
+  </section>
+
+  <!-- ============ 5. PAUZA MEZI KOLY ============ -->
+  <section id="scr-pause" class="screen">
+    <div class="panel">
+      <div id="pause-text" class="instructions"></div>
+      <div id="countdown">60</div>
+      <div id="pause-continue" class="hidden">
+        <p id="pause-end-text"></p>
+        <button id="btn-pause" class="btn-main" type="button">Pokračovat</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. KONEC ============ -->
+  <section id="scr-end" class="screen">
+    <div class="panel">
+      <p id="end-text" class="lead"></p>
+      <p id="end-code-label" class="muted"></p>
+      <div id="end-code">-----</div>
+    </div>
+    <div id="save-status" class="corner corner-br small">Ukládám…</div>
+  </section>
+
+  <!-- ============ ADMINISTRACE (?admin=1) ============ -->
+  <section id="scr-admin" class="screen screen-admin">
+    <div class="admin">
+      <h1>Administrace – lokální zálohy na tomto počítači</h1>
+      <p class="muted small" id="admin-sheets"></p>
+      <div class="admin-buttons">
+        <button type="button" id="adm-csv-trials">Stáhnout vše jako CSV</button>
+        <button type="button" id="adm-csv-summary">Stáhnout souhrny jako CSV</button>
+        <button type="button" id="adm-resend">Znovu odeslat neodeslaná data do Google Sheets</button>
+        <button type="button" id="adm-delete" class="danger">Smazat lokální zálohy</button>
+      </div>
+      <p id="admin-msg" class="small"></p>
+      <div class="table-wrap">
+        <table id="admin-table">
+          <thead>
+            <tr><th>Kód</th><th>Datum a čas startu</th><th>Režim</th><th>Dokončeno</th>
+                <th>Kolo 1 → Sheets</th><th>Kolo 2 → Sheets</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="small"><a href="./">Zpět na přípravu testu</a></p>
+    </div>
+  </section>
+
+  <!-- Vlastní potvrzovací dialog (místo confirm()) -->
+  <div id="dialog" class="dialog-backdrop hidden">
+    <div class="dialog">
+      <p id="dialog-text"></p>
+      <div class="dialog-buttons">
+        <button type="button" id="dialog-cancel">Zrušit</button>
+        <button type="button" id="dialog-ok" class="danger">Smazat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chybová hláška, kdyby se nenačetly skripty -->
+  <noscript><p class="panel">Pro spuštění testu je potřeba zapnutý JavaScript.</p></noscript>
+
+  <script src="config.js"></script>
+  <script src="stimuli.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
