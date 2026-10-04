@@ -168,7 +168,7 @@ a { color: #9CC8F0; }
   border-radius: 8px;
   cursor: pointer;
   touch-action: manipulation;
-  /* barva textu se nastavuje v app.js podle barvy tlačítka a nemění se */
+  color: #FFFFFF;          /* všechna tlačítka mají stejný bílý text */
 }
 .answer-btn:hover { background: var(--btn-bg-hover); border-color: var(--border-hover); }
 .answer-btn:focus { outline: none; }
@@ -184,23 +184,16 @@ a { color: #9CC8F0; }
 #pause-continue p { font-size: 20px; }
 
 /* ---- Konec -------------------------------------------------------------- */
-#end-code {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 16px 40px;
-  font-size: 72px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  background: #222;
-}
+.end-thanks { text-align: center; }
+#end-code-box { color: var(--muted); }
+#end-code { color: var(--text); letter-spacing: 0.08em; font-size: 15px; }
 
 /* ---- Rohové ukazatele ------------------------------------------------- */
 .corner { position: fixed; color: var(--muted); }
 .corner-tl { top: 10px; left: 12px; }
 .corner-tr { top: 10px; right: 14px; text-align: right; }
 .corner-br { bottom: 10px; right: 14px; }
+.corner-bl { bottom: 10px; left: 12px; }
 #test-label {
   z-index: 50;
   padding: 4px 10px;
@@ -213,6 +206,7 @@ a { color: #9CC8F0; }
 .sep { margin: 0 6px; }
 .status-ok { color: var(--ok); }
 .status-bad { color: var(--danger); }
+#admin-check-result { white-space: pre-line; }
 
 /* ---- Administrace ------------------------------------------------------- */
 .screen-admin { align-items: stretch; justify-content: flex-start; overflow: auto; }

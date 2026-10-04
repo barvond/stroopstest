@@ -45,9 +45,9 @@ Listy `polozky`, `souhrn`, `test_polozky` a `test_souhrn` nemusíte zakládat, s
 4. Klikněte na **Nasadit**.
 5. Google bude chtít **autorizovat přístup**. Klikněte na „Autorizovat přístup“, vyberte svůj účet. Objeví se varování „Google tuto aplikaci neověřil“ – klikněte na **Rozšířené** (Advanced) → **Přejít na Stroop (nezabezpečené)** → **Povolit**. Je to v pořádku, jde o váš vlastní skript.
 6. Zobrazí se **URL webové aplikace** končící na `/exec`. **Zkopírujte ji** (tlačítko Kopírovat).
-7. Kontrola: vložte URL do nového panelu prohlížeče. Musí se zobrazit `{"ok":true,"zprava":"Stroop – spojení funguje"}`.
+7. Kontrola: vložte URL do nového panelu prohlížeče. Musí se zobrazit `{"ok":true,"zprava":"Stroop – spojení funguje, tabulka: …"}`. Když se zobrazí **„Script function not found: doGet“**, nasazená verze neobsahuje kód – viz poznámka níže.
 
-> **Pozor:** Pokud později v `Code.gs` cokoli změníte, je nutné vydat novou verzi: **Nasadit → Spravovat nasazení → tužka (Upravit) → Verze: Nová verze → Nasadit**. URL zůstane stejná.
+> **Pozor:** Nasazení je „snímek“ kódu v okamžiku nasazení. Když nasadíte dřív, než vložíte a uložíte kód, nebo pokud v `Code.gs` cokoli změníte, je nutné vydat novou verzi: **Nasadit → Spravovat nasazení → tužka (Upravit) → Verze: Nová verze → Nasadit**. URL zůstane stejná.
 
 ## Krok 3: Vložení URL do `config.js`
 
@@ -76,10 +76,10 @@ Listy `polozky`, `souhrn`, `test_polozky` a `test_souhrn` nemusíte zakládat, s
 2. Klikněte na **Test zvuku** vpravo nahoře – musí zaznít zvonění. Nastavte hlasitost počítače tak, aby ho bylo slyšet za dveřmi.
 3. Projděte celý test (v testovacím režimu má každé kolo jen 6 položek a pauza 5 s).
 4. Na konci zkontrolujte:
-   - ukazatel vpravo dole: **Data uložena ✓**,
+   - ukazatel vlevo dole: **Data uložena ✓**, kód vpravo dole,
    - stáhl se soubor `stroop_<kód>_<datum>.csv`,
    - v Google tabulce přibyly listy **test_polozky** (12 řádků) a **test_souhrn** (2 řádky).
-5. Otevřete `https://barvond.github.io/stroopstest/?admin=1` – účastník z testu musí být v seznamu.
+5. Otevřete `https://barvond.github.io/stroopstest/?admin=1` – účastník z testu musí být v seznamu. Tlačítko **Otestovat spojení s Google Sheets** řekne, jestli skript odpovídá, a když ne, proč.
 6. Testovací data v tabulce klidně smažte (smažte celé listy `test_…`, skript si je při dalším testu založí znovu).
 
 ---
@@ -103,8 +103,8 @@ Listy `polozky`, `souhrn`, `test_polozky` a `test_souhrn` nemusíte zakládat, s
 
 **Po skončení**
 
-1. Na obrazovce je velký **kód účastníka** – zapište ho na papírový informovaný souhlas.
-2. Zkontrolujte ukazatel vpravo dole:
+1. Účastník vidí děkovnou zprávu. **Kód účastníka** je malým písmem v **pravém dolním rohu** – zapište ho na papírový informovaný souhlas.
+2. Zkontrolujte ukazatel stavu ukládání **vlevo dole**:
    - **Data uložena ✓** – vše v pořádku.
    - **Data odeslána (bez potvrzení), záloha v počítači ✓** – data téměř jistě dorazila; ověřte v tabulce, že tam kód je.
    - **Uložení online selhalo…** – nic se neděje, data jsou v počítači (viz níže).
@@ -127,7 +127,7 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 
 ## Poznámky k datům
 
-- `rt_ms` = reakční čas v ms (od vykreslení slova do stisknutí tlačítka myši).
+- `rt_s` = reakční čas v **sekundách** s přesností na ms (např. `0,523`), od vykreslení slova do stisknutí tlačítka myši. Souhrny mají časy také v sekundách (`prumer_rt_spravne_s`, `stroop_efekt_s` …).
 - `slovo`, `barva_pisma`, `odpoved` používají názvy bez diakritiky: `cervena, oranzova, zluta, zelena, modra, fialova`.
 - `pohlavi`: `zena, muz, jine, nechci_uvest`.
 - `opustil_okno = 1`: během této položky účastník opustil celou obrazovku nebo přepnul okno.
@@ -148,13 +148,13 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 2. [ ] Test zvuku: zvonění je slyšet **za zavřenými dveřmi** při hlasitosti, kterou budete používat.
 3. [ ] „Připravit test“ přepne do celé obrazovky.
 4. [ ] Tlačítko Pokračovat u věku a pohlaví je neaktivní, dokud nejsou vyplněné obě položky; věk 14 nebo 100 nejde zadat.
-5. [ ] Video se přehraje se zvukem a Pokračovat se odemkne až po dohrání. (Bez videa se zobrazí text.)
+5. [ ] Video se přehraje se zvukem a „Zahájit test“ se odemkne až po dohrání. (Bez videa se zobrazí text instrukcí.)
 6. [ ] Účastník bez pomoci pochopí z instrukcí, že kliká na **barvu písma** (zeptejte se pilotního účastníka).
 7. [ ] Slovo i tlačítka se při testu nehýbou, žlutá je dobře čitelná na monitoru v laboratoři.
 8. [ ] Klik během křížku nic neudělá; dvojklik na odpověď nepřeskočí další slovo.
 9. [ ] Na začátku pauzy zazní zvonění, odpočet nejde přeskočit (kliky ani klávesy), po 0 se objeví Pokračovat.
 10. [ ] Pozorovatelé stihnou během 60 s přijít a usadit se.
-11. [ ] Na konci je čitelný kód, ukazatel „Data uložena ✓“ a stáhl se CSV soubor.
+11. [ ] Na konci je děkovná zpráva, kód vpravo dole, „Data uložena ✓“ vlevo dole a stáhl se CSV soubor.
 12. [ ] CSV se v Excelu otevře se správnými sloupci, diakritikou a desetinnými čárkami.
 13. [ ] V tabulce je v `test_souhrn` sloupec `uspesnost_procent` a hodnoty sedí s tím, jak jste klikali (zkuste schválně pár chyb).
 14. [ ] Při vypnuté Wi-Fi test doběhne, ukazatel ukáže selhání a admin stránka data po zapnutí Wi-Fi dopošle.
@@ -179,3 +179,5 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 13. CSV obsahuje na konci testu jen položkové řádky (jak zadání požaduje); souhrny jde stáhnout na admin stránce.
 14. Zvonění: syntetický elektrický zvonek 3,5 s (cca 760 Hz, 18 úderů/s) přes Web Audio API; přednostně se použije `audio/zvonek.mp3`, pokud existuje.
 15. Na přípravné obrazovce je kromě ukazatele Sheets a testu zvuku i malý odkaz „Administrace“.
+16. Po videu (nebo textových instrukcích, když video chybí) následuje rovnou tlačítko „Zahájit test“; samostatná obrazovka se shrnutím instrukcí byla na přání odstraněna (od verze 1.1.0).
+17. Starší lokální zálohy s časy v ms (verze 1.0.0) se při exportu a dopsání z admin stránky automaticky převedou na sekundy.

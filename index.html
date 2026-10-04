@@ -65,15 +65,7 @@
       </div>
       <div id="video-fallback" class="instructions hidden"></div>
       <p id="video-hint" class="muted"></p>
-      <button id="btn-video" class="btn-main" type="button" disabled>Pokračovat</button>
-    </div>
-  </section>
-
-  <!-- ============ 3. SHRNUTÍ INSTRUKCÍ ============ -->
-  <section id="scr-instr" class="screen">
-    <div class="panel">
-      <div id="instr-text" class="instructions"></div>
-      <button id="btn-start" class="btn-main" type="button">Začít</button>
+      <button id="btn-video" class="btn-main" type="button" disabled>Zahájit test</button>
     </div>
   </section>
 
@@ -101,11 +93,14 @@
   <!-- ============ 7. KONEC ============ -->
   <section id="scr-end" class="screen">
     <div class="panel">
-      <p id="end-text" class="lead"></p>
-      <p id="end-code-label" class="muted"></p>
-      <div id="end-code">-----</div>
+      <div id="end-text" class="instructions end-thanks"></div>
     </div>
-    <div id="save-status" class="corner corner-br small">Ukládám…</div>
+    <!-- malý kód účastníka pro experimentátora -->
+    <div id="end-code-box" class="corner corner-br small">
+      <span id="end-code-label"></span> <strong id="end-code">-----</strong>
+    </div>
+    <!-- stav ukládání dat -->
+    <div id="save-status" class="corner corner-bl small">Ukládám…</div>
   </section>
 
   <!-- ============ ADMINISTRACE (?admin=1) ============ -->
@@ -116,6 +111,7 @@
       <div class="admin-buttons">
         <button type="button" id="adm-csv-trials">Stáhnout vše jako CSV</button>
         <button type="button" id="adm-csv-summary">Stáhnout souhrny jako CSV</button>
+        <button type="button" id="adm-check">Otestovat spojení s Google Sheets</button>
         <button type="button" id="adm-resend">Znovu odeslat neodeslaná data do Google Sheets</button>
         <button type="button" id="adm-delete" class="danger">Smazat lokální zálohy</button>
       </div>

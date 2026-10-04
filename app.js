@@ -6,7 +6,7 @@
      2. Pomocné funkce (obrazovky, náhoda, statistika)
      3. Míchání položek s omezeními
      4. Zvuk (odemčení a zvonění)
-     5. Obrazovky průběhu: příprava → úvod → video → instrukce
+     5. Obrazovky průběhu: příprava → úvod → video (→ Zahájit test)
      6. Kolo testu (křížek, slovo, měření reakčního času)
      7. Pauza mezi koly a konec testu
      8. Ukládání dat (localStorage, CSV, Google Sheets)
@@ -45,7 +45,7 @@
     'kod_ucastnika', 'datum_cas_startu', 'vek', 'vek_mimo_rozsah', 'pohlavi',
     'kolo', 'podminka', 'poradi_v_kole', 'id_polozky',
     'slovo', 'barva_pisma', 'typ',
-    'odpoved', 'spravne', 'rt_ms', 'cas_odpovedi_iso',
+    'odpoved', 'spravne', 'rt_s', 'cas_odpovedi_iso',
     'testovaci_rezim', 'verze_aplikace', 'user_agent', 'rozliseni_obrazovky',
     'opustil_okno'
   ];
@@ -53,9 +53,9 @@
     'kod_ucastnika', 'datum_cas_startu', 'vek', 'pohlavi', 'kolo', 'podminka',
     'pocet_polozek', 'pocet_spravne', 'uspesnost_procent',
     'uspesnost_kongruentni_procent', 'uspesnost_inkongruentni_procent',
-    'prumer_rt_spravne_ms', 'median_rt_spravne_ms',
-    'prumer_rt_kongruentni_spravne_ms', 'prumer_rt_inkongruentni_spravne_ms',
-    'stroop_efekt_ms',
+    'prumer_rt_spravne_s', 'median_rt_spravne_s',
+    'prumer_rt_kongruentni_spravne_s', 'prumer_rt_inkongruentni_spravne_s',
+    'stroop_efekt_s',
     'testovaci_rezim'
   ];
 
@@ -108,19 +108,20 @@
   }
 
   function round1(x) { return Math.round(x * 10) / 10; }
+  function round3(x) { return Math.round(x * 1000) / 1000; }   // sekundy s přesností na ms
 
   function mean(arr) {
     if (!arr.length) return '';
     var s = 0;
     for (var i = 0; i < arr.length; i++) s += arr[i];
-    return round1(s / arr.length);
+    return round3(s / arr.length);
   }
 
   function median(arr) {
     if (!arr.length) return '';
     var a = arr.slice().sort(function (x, y) { return x - y; });
     var m = Math.floor(a.length / 2);
-    return round1(a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2);
+    return round3(a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2);
   }
 
   function percent(part, whole) { return whole ? round1(100 * part / whole) : ''; }
@@ -409,8 +410,7 @@
       try { v.pause(); } catch (e) { /* nic */ }
       $('video-wrap').classList.add('hidden');
       $('video-title').textContent = '';
-      $('video-fallback').innerHTML = C.TEXTY.INSTRUKCE.replace(
-        /<p>Test má dvě části\.[\s\S]*?<\/p>/, '');   // bez věty o tlačítku „Začít“
+      $('video-fallback').innerHTML = C.TEXTY.INSTRUKCE;
       $('video-fallback').classList.remove('hidden');
       hint.textContent = '';
       btn.disabled = false;
@@ -421,10 +421,12 @@
       btn.disabled = false;
       hint.textContent = C.TEXTY.VIDEO_HOTOVO;
     });
+    // „Zahájit test“ → rovnou 1. kolo
     btn.addEventListener('click', function () {
-      if (btn.disabled) return;
+      if (btn.disabled || S.phase !== 'video') return;
       try { v.pause(); } catch (e) { /* nic */ }
-      showInstructions();
+      enableTestProtection();
+      startRound(1);
     });
 
     show('scr-video');
@@ -441,18 +443,6 @@
     }, 10000);
   }
 
-  // ---- 3. Shrnutí instrukcí ----------------------------------------------
-  function showInstructions() {
-    S.phase = 'instr';
-    $('instr-text').innerHTML = C.TEXTY.INSTRUKCE;
-    $('btn-start').addEventListener('click', function () {
-      if (S.phase !== 'instr') return;
-      enableTestProtection();
-      startRound(1);
-    });
-    show('scr-instr');
-  }
-
   /* ======================================================================
      6. KOLO TESTU
      ====================================================================== */
@@ -467,7 +457,6 @@
       btn.type = 'button';
       btn.className = 'answer-btn';
       btn.textContent = b.label;
-      btn.style.color = b.hex;
       btn.tabIndex = -1;                 // nelze ovládat klávesnicí
       btn.dataset.key = b.key;
       btn.addEventListener('pointerdown', onAnswer);
@@ -543,7 +532,7 @@
       typ: it.typ,
       odpoved: odpoved,
       spravne: odpoved === it.barva ? 1 : 0,
-      rt_ms: round1(tResp - S.onset),
+      rt_s: round3((tResp - S.onset) / 1000),   // reakční čas v sekundách
       cas_odpovedi_iso: new Date(origin + tResp).toISOString(),
       testovaci_rezim: TEST ? 1 : 0,
       verze_aplikace: C.APP_VERSION,
@@ -564,7 +553,7 @@
     var inc = rows.filter(function (t) { return t.typ === 'inkongruentni'; });
     var congOk = cong.filter(function (t) { return t.spravne === 1; });
     var incOk = inc.filter(function (t) { return t.spravne === 1; });
-    var rt = function (arr) { return arr.map(function (t) { return t.rt_ms; }); };
+    var rt = function (arr) { return arr.map(function (t) { return t.rt_s; }); };
     var mC = mean(rt(congOk)), mI = mean(rt(incOk));
 
     return {
@@ -579,11 +568,11 @@
       uspesnost_procent: percent(ok.length, rows.length),
       uspesnost_kongruentni_procent: percent(congOk.length, cong.length),
       uspesnost_inkongruentni_procent: percent(incOk.length, inc.length),
-      prumer_rt_spravne_ms: mean(rt(ok)),
-      median_rt_spravne_ms: median(rt(ok)),
-      prumer_rt_kongruentni_spravne_ms: mC,
-      prumer_rt_inkongruentni_spravne_ms: mI,
-      stroop_efekt_ms: (mC !== '' && mI !== '') ? round1(mI - mC) : '',
+      prumer_rt_spravne_s: mean(rt(ok)),
+      median_rt_spravne_s: median(rt(ok)),
+      prumer_rt_kongruentni_spravne_s: mC,
+      prumer_rt_inkongruentni_spravne_s: mI,
+      stroop_efekt_s: (mC !== '' && mI !== '') ? round3(mI - mC) : '',
       testovaci_rezim: TEST ? 1 : 0
     };
   }
@@ -642,7 +631,7 @@
   function finishTest() {
     S.phase = 'end';
     disableUnloadWarning();
-    $('end-text').textContent = C.TEXTY.KONEC;
+    $('end-text').innerHTML = C.TEXTY.KONEC;
     $('end-code-label').textContent = C.TEXTY.KONEC_KOD_POPISEK;
     $('end-code').textContent = S.kod;
     show('scr-end');
@@ -662,7 +651,7 @@
     var busy = st.some(function (s) { return s === 'ceka' || s === 'odesila'; });
     var allConfirmed = st.every(function (s) { return s === 'potvrzeno'; });
     var allSent = st.every(function (s) { return s === 'potvrzeno' || s === 'nepotvrzeno'; });
-    el.className = 'corner corner-br small';
+    el.className = 'corner corner-bl small';
     if (busy) {
       el.textContent = 'Ukládám…';
     } else if (allConfirmed) {
@@ -721,6 +710,8 @@
     return p;
   }
 
+  var lastSendError = '';   // poslední chybová zpráva (zobrazí se v administraci)
+
   // Vrací stav: 'potvrzeno' | 'nepotvrzeno' | 'chyba' | 'bez_url'
   function postToSheets(payload) {
     if (!C.SHEETS_URL) return Promise.resolve('bez_url');
@@ -736,7 +727,8 @@
             return r.text().then(function (txt) {
               var j = null;
               try { j = JSON.parse(txt); } catch (e) { /* není JSON */ }
-              if (j && j.ok === true) return 'potvrzeno';
+              if (j && j.ok === true) { lastSendError = ''; return 'potvrzeno'; }
+              lastSendError = (j && j.chyba) ? String(j.chyba) : txt.slice(0, 300);
               return attempt(i + 1);       // server odpověděl chybou → znovu
             });
           })
@@ -798,6 +790,23 @@
     zadna_data: '– (kolo neproběhlo)'
   };
 
+  // Starší záznamy (verze 1.0.0) měly časy v ms – převedeme je na sekundy
+  function upgradeRow(r) {
+    var out = {};
+    Object.keys(r).forEach(function (k) {
+      var v = r[k];
+      if (/_ms$/.test(k)) {
+        out[k.replace(/_ms$/, '_s')] = (v === '' || v === null || v === undefined) ? '' : round3(v / 1000);
+      } else out[k] = v;
+    });
+    return out;
+  }
+  function upgradeRecord(rec) {
+    rec.trials = (rec.trials || []).map(upgradeRow);
+    rec.summaries = (rec.summaries || []).map(upgradeRow);
+    return rec;
+  }
+
   function loadAllRecords() {
     var recs = [];
     try {
@@ -805,7 +814,7 @@
         var k = localStorage.key(i);
         if (k && k.indexOf(STORAGE_PREFIX) === 0) {
           var r = storageGet(k);
-          if (r && r.kod) recs.push(r);
+          if (r && r.kod) recs.push(upgradeRecord(r));
         }
       }
     } catch (e) { /* localStorage nedostupné */ }
@@ -880,6 +889,16 @@
       msg.textContent = 'Staženo ' + rows.length + ' souhrnných řádků.';
     });
 
+    $('adm-check').addEventListener('click', function () {
+      var btn = this;
+      btn.disabled = true;
+      msg.textContent = 'Zkouším spojení…';
+      checkSheetsConnection().then(function (text) {
+        msg.textContent = text;
+        btn.disabled = false;
+      });
+    });
+
     $('adm-resend').addEventListener('click', function () {
       var btn = this;
       if (!C.SHEETS_URL) { msg.textContent = 'Nejdřív vložte URL skriptu do config.js (SHEETS_URL).'; return; }
@@ -911,7 +930,8 @@
         });
       }, Promise.resolve()).then(function () {
         btn.disabled = false;
-        msg.textContent = 'Hotovo: odesláno ' + okCount + ' z ' + jobs.length + ' kol.';
+        msg.textContent = 'Hotovo: odesláno ' + okCount + ' z ' + jobs.length + ' kol.' +
+          (lastSendError ? ' Poslední chyba ze serveru: ' + lastSendError : '');
       });
     });
 
@@ -932,6 +952,36 @@
         } catch (e) { msg.textContent = 'Mazání se nepodařilo.'; }
         renderAdmin();
       });
+    });
+  }
+
+  // Otestuje spojení se skriptem a vrátí srozumitelnou zprávu.
+  // Pošle prázdná data – do tabulky se nic nezapíše.
+  function checkSheetsConnection() {
+    if (!C.SHEETS_URL) return Promise.resolve('✗ V config.js chybí SHEETS_URL.');
+    if (!/\/exec$/.test(C.SHEETS_URL)) {
+      return Promise.resolve('✗ URL musí končit na /exec (ne /dev). Zkopírujte URL webové aplikace z „Spravovat nasazení“.');
+    }
+    return fetch(C.SHEETS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ trials: [], summaries: [], kontrola: 1 })
+    }).then(function (r) { return r.text(); }).then(function (txt) {
+      var j = null;
+      try { j = JSON.parse(txt); } catch (e) { /* není JSON */ }
+      if (j && j.ok === true) return '✓ Spojení funguje, skript odpovídá a je připojený k tabulce.';
+      if (j && j.chyba) return '✗ Skript odpověděl chybou: ' + j.chyba;
+      if (/function not found/i.test(txt)) {
+        return '✗ Google hlásí „Script function not found“: nasazená verze neobsahuje kód z Code.gs. ' +
+          'Vložte kód, uložte a vydejte novou verzi nasazení (NAVOD.md, Krok 2).';
+      }
+      return '✗ Skript nevrátil očekávanou odpověď. Začátek odpovědi: ' + txt.replace(/<[^>]+>/g, ' ').slice(0, 200);
+    }).catch(function () {
+      return '✗ Odpověď skriptu nejde přečíst. Otevřete URL skriptu v novém panelu prohlížeče:\n' +
+        '• „{\"ok\":true…}“ → skript je v pořádku, zkuste test znovu;\n' +
+        '• „Script function not found“ → nasazená verze neobsahuje kód, vydejte novou verzi (NAVOD.md, Krok 2);\n' +
+        '• přihlašovací stránka Googlu → nasazení nemá přístup „Kdokoli“;\n' +
+        '• stránka se nenačte → nejde internet.';
     });
   }
 

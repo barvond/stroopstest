@@ -16,7 +16,7 @@ var HLAVICKA_POLOZKY = [
   'kod_ucastnika', 'datum_cas_startu', 'vek', 'vek_mimo_rozsah', 'pohlavi',
   'kolo', 'podminka', 'poradi_v_kole', 'id_polozky',
   'slovo', 'barva_pisma', 'typ',
-  'odpoved', 'spravne', 'rt_ms', 'cas_odpovedi_iso',
+  'odpoved', 'spravne', 'rt_s', 'cas_odpovedi_iso',
   'testovaci_rezim', 'verze_aplikace', 'user_agent', 'rozliseni_obrazovky',
   'opustil_okno'
 ];
@@ -26,9 +26,9 @@ var HLAVICKA_SOUHRN = [
   'kod_ucastnika', 'datum_cas_startu', 'vek', 'pohlavi', 'kolo', 'podminka',
   'pocet_polozek', 'pocet_spravne', 'uspesnost_procent',
   'uspesnost_kongruentni_procent', 'uspesnost_inkongruentni_procent',
-  'prumer_rt_spravne_ms', 'median_rt_spravne_ms',
-  'prumer_rt_kongruentni_spravne_ms', 'prumer_rt_inkongruentni_spravne_ms',
-  'stroop_efekt_ms',
+  'prumer_rt_spravne_s', 'median_rt_spravne_s',
+  'prumer_rt_kongruentni_spravne_s', 'prumer_rt_inkongruentni_spravne_s',
+  'stroop_efekt_s',
   'testovaci_rezim'
 ];
 
@@ -39,7 +39,9 @@ var TEXTOVE_SLOUPCE = ['kod_ucastnika', 'datum_cas_startu', 'cas_odpovedi_iso',
 
 /** Test spojení: otevřete URL skriptu v prohlížeči → {"ok":true} */
 function doGet() {
-  return vratJson({ ok: true, zprava: 'Stroop – spojení funguje' });
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  return vratJson({ ok: !!ss, zprava: ss ? 'Stroop – spojení funguje, tabulka: ' + ss.getName()
+                                         : 'Skript není připojený k tabulce' });
 }
 
 /** Příjem dat z webu: { trials: [...], summaries: [...] } */
@@ -49,6 +51,7 @@ function doPost(e) {
     lock.waitLock(30000);   // počká, až dopíše jiný souběžný zápis
     var data = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
+    if (!ss) throw new Error('Skript není připojený k tabulce – vytvořte ho v tabulce přes Rozšíření → Apps Script.');
 
     var trials = data.trials || [];
     var summaries = data.summaries || [];

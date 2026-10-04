@@ -14,7 +14,7 @@ window.STROOP_CONFIG = {
   SHEETS_URL: 'https://script.google.com/macros/s/AKfycby8iveL87rjLY44QbgDj3Aq5Dz6fZXMDlTUxq4ger0BuSoA-zBuY7_g0BaYAzTRzglV-w/exec',
 
   /* ---- Verze aplikace (zapisuje se do dat) ------------------------------ */
-  APP_VERSION: '1.0.0',
+  APP_VERSION: '1.1.0',
 
   /* ---- Časování a rozsah testu ------------------------------------------ */
   FIXATION_MS: 500,          // jak dlouho svítí křížek „+“ před slovem (ms)
@@ -40,10 +40,10 @@ window.STROOP_CONFIG = {
 
   /* ---- Barvy ------------------------------------------------------------
      key: interní název (zapisuje se do dat), label: co se zobrazí,
-     hex: barva písma. Pořadí určuje pořadí tlačítek zleva doprava. */
+     hex: barva písma slova uprostřed (tlačítka mají vždy bílý text). Pořadí určuje pořadí tlačítek zleva doprava. */
   BARVY: [
     { key: 'cervena',  label: 'ČERVENÁ',  hex: '#E53935' },
-    { key: 'oranzova', label: 'ORANŽOVÁ', hex: '#FB8C00' },
+    { key: 'oranzova', label: 'ORANŽOVÁ', hex: '#E8650A' },   // tmavší, aby se nepletla se žlutou
     { key: 'zluta',    label: 'ŽLUTÁ',    hex: '#FDD835' },
     { key: 'zelena',   label: 'ZELENÁ',   hex: '#43A047' },
     { key: 'modra',    label: 'MODRÁ',    hex: '#1E88E5' },
@@ -56,9 +56,10 @@ window.STROOP_CONFIG = {
       'Vítejte. Děkujeme za účast ve výzkumu. Nejprve prosím vyplňte dva údaje.',
 
     VIDEO_NADPIS: 'Instrukce k testu',
-    VIDEO_HOTOVO: 'Video můžete pustit znovu, nebo pokračujte dál.',
-    VIDEO_CEKANI: 'Pusťte si prosím video. Tlačítko „Pokračovat“ se odemkne po jeho dohrání.',
+    VIDEO_HOTOVO: 'Video můžete pustit znovu. Až budete připraveni, klikněte na „Zahájit test“.',
+    VIDEO_CEKANI: 'Pusťte si prosím video. Tlačítko „Zahájit test“ se odemkne po jeho dohrání.',
 
+    /* Textové instrukce se zobrazí jen tehdy, když se nepodaří načíst video. */
     INSTRUKCE:
       '<h2>Jak test probíhá</h2>' +
       '<p>Uprostřed obrazovky se vždy objeví slovo, které označuje barvu. ' +
@@ -69,7 +70,7 @@ window.STROOP_CONFIG = {
       '<span style="color:#E53935;font-weight:700">ZELENÁ</span> napsané červeně, klikněte na ČERVENÁ.</p>' +
       '<p>Odpovídejte co nejrychleji a zároveň co nejpřesněji. Před každým slovem ' +
       'se na chvíli objeví křížek „+“, dívejte se na něj.</p>' +
-      '<p>Test má dvě části. Až budete připraveni, klikněte na „Začít“.</p>',
+      '<p>Test má dvě části. Až budete připraveni, klikněte na „Zahájit test“.</p>',
 
     PAUZA:
       '<h2>První část je hotová.</h2>' +
@@ -79,7 +80,10 @@ window.STROOP_CONFIG = {
     PAUZA_KONEC: 'Až budete připraveni, klikněte na Pokračovat.',
 
     KONEC:
-      'Děkujeme, test je u konce. Prosím zůstaňte na místě, experimentátor za vámi přijde.',
-    KONEC_KOD_POPISEK: 'Váš kód (experimentátor si ho zapíše):'
+      '<h2>Děkujeme vám za účast!</h2>' +
+      '<p>Test je u konce. Velmi si vážíme vašeho času a pozornosti, ' +
+      'kterou jste úkolu věnovali – bez vás by tento výzkum nemohl vzniknout.</p>' +
+      '<p>Prosím zůstaňte na místě, experimentátor za vámi za chvíli přijde.</p>',
+    KONEC_KOD_POPISEK: 'Kód:'   // malý kód účastníka v pravém dolním rohu
   }
 };
