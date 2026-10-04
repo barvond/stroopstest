@@ -243,3 +243,6 @@ button:disabled { opacity: 0.4; cursor: wait; }
   border-radius: 10px;
 }
 .dialog-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+
+/* Prázdné texty na obrazovce s videem nezabírají místo */
+#video-title:empty, #video-hint:empty { display: none; }

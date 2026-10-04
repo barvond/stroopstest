@@ -15,7 +15,7 @@ Návod je psaný pro člověka, který neprogramuje. Postupujte krok za krokem.
 | `style.css` | vzhled |
 | `app.js` | logika testu (není potřeba měnit) |
 | `config.js` | **nastavení** – sem patří URL Google tabulky, časy a texty |
-| `stimuli.js` | pevná sada 80 položek (ID 1–80), kontrolní součty jsou na konci souboru |
+| `stimuli.js` | pevná sada 40 položek (ID 1–40), stejná pro obě kola, kontrolní součty jsou na konci souboru |
 | `video/instrukce.mp4` | instruktážní video (nahrajete sami; bez něj se zobrazí textové instrukce) |
 | `audio/zvonek.mp3` | nepovinné – vlastní zvonění; když chybí, aplikace zvoní sama |
 | `apps-script/Code.gs` | kód pro Google tabulku |
@@ -148,7 +148,7 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 2. [ ] Test zvuku: zvonění je slyšet **za zavřenými dveřmi** při hlasitosti, kterou budete používat.
 3. [ ] „Připravit test“ přepne do celé obrazovky.
 4. [ ] Tlačítko Pokračovat u věku a pohlaví je neaktivní, dokud nejsou vyplněné obě položky; věk 14 nebo 100 nejde zadat.
-5. [ ] Video se přehraje se zvukem a „Zahájit test“ se odemkne až po dohrání. (Bez videa se zobrazí text instrukcí.)
+5. [ ] Video se přehraje se zvukem a „Spustit test“ se odemkne až po dohrání. (Bez videa se zobrazí text instrukcí.)
 6. [ ] Účastník bez pomoci pochopí z instrukcí, že kliká na **barvu písma** (zeptejte se pilotního účastníka).
 7. [ ] Slovo i tlačítka se při testu nehýbou, žlutá je dobře čitelná na monitoru v laboratoři.
 8. [ ] Klik během křížku nic neudělá; dvojklik na odpověď nepřeskočí další slovo.
@@ -158,7 +158,7 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 12. [ ] CSV se v Excelu otevře se správnými sloupci, diakritikou a desetinnými čárkami.
 13. [ ] V tabulce je v `test_souhrn` sloupec `uspesnost_procent` a hodnoty sedí s tím, jak jste klikali (zkuste schválně pár chyb).
 14. [ ] Při vypnuté Wi-Fi test doběhne, ukazatel ukáže selhání a admin stránka data po zapnutí Wi-Fi dopošle.
-15. [ ] Ostrý běh (bez `?test=1`) má 80 + 80 položek a trvá rozumnou dobu (změřte).
+15. [ ] Ostrý běh (bez `?test=1`) má 40 + 40 položek a trvá rozumnou dobu (změřte).
 
 ---
 
@@ -167,7 +167,7 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 1. **`datum_cas_startu`** = čas kliknutí na „Připravit test“ (ISO 8601, UTC).
 2. Sloupec **`opustil_okno`** je přidaný jako **poslední** sloupec položkových dat (za `rozliseni_obrazovky`), aby zůstalo zachované pořadí z kap. 7.1.
 3. Hodnoty `slovo`, `barva_pisma`, `odpoved` a `pohlavi` se zapisují **bez diakritiky** (`cervena`, `nechci_uvest` …) kvůli snadné analýze.
-4. Konkrétní 80 položek: kongruentní ČERVENÁ, ORANŽOVÁ, ŽLUTÁ, ZELENÁ 7×, MODRÁ, FIALOVÁ 6×; inkongruentní všech 30 kombinací + 10 dalších zvolených tak, aby i v součtu všech 80 položek měla každá barva písma i každé slovo 13–14 výskytů.
+4. Sada má od verze 1.2.0 **40 položek** (každé kolo je projde všechny, celkem 80 odpovědí na účastníka): 20 kongruentních (ČERVENÁ, ORANŽOVÁ, ŽLUTÁ, ZELENÁ 3×, MODRÁ, FIALOVÁ 4×) a 20 různých inkongruentních kombinací; v součtu má každá barva písma i každé slovo 6–7 výskytů.
 5. **Testovací režim:** 6 položek na kolo = 3 kongruentní + 3 inkongruentní, náhodně vybrané ze sady (zvlášť pro každé kolo), se stejnými pravidly míchání.
 6. **Reakční čas** se bere z časové značky události `pointerdown` (stejná časová osa jako `performance.now()`); počítá se jen levé tlačítko myši. Klávesnicí odpovídat nejde.
 7. **Stav „odesláno, nepotvrzeno“** (režim `no-cors`) se na konci zobrazuje jako „Data odeslána (bez potvrzení), záloha v počítači ✓“ a admin stránka ho znovu neposílá, aby nevznikaly duplicity.
@@ -179,5 +179,5 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 13. CSV obsahuje na konci testu jen položkové řádky (jak zadání požaduje); souhrny jde stáhnout na admin stránce.
 14. Zvonění: syntetický elektrický zvonek 3,5 s (cca 760 Hz, 18 úderů/s) přes Web Audio API; přednostně se použije `audio/zvonek.mp3`, pokud existuje.
 15. Na přípravné obrazovce je kromě ukazatele Sheets a testu zvuku i malý odkaz „Administrace“.
-16. Po videu (nebo textových instrukcích, když video chybí) následuje rovnou tlačítko „Zahájit test“; samostatná obrazovka se shrnutím instrukcí byla na přání odstraněna (od verze 1.1.0).
+16. Obrazovka s videem nemá žádný text, jen video a tlačítko „Spustit test“ (to se odemkne po dohrání videa). Když video chybí, je na obrazovce jen tlačítko. Textové instrukce se nezobrazují vůbec (od verze 1.2.0).
 17. Starší lokální zálohy s časy v ms (verze 1.0.0) se při exportu a dopsání z admin stránky automaticky převedou na sekundy.

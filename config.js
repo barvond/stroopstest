@@ -14,12 +14,12 @@ window.STROOP_CONFIG = {
   SHEETS_URL: 'https://script.google.com/macros/s/AKfycby8iveL87rjLY44QbgDj3Aq5Dz6fZXMDlTUxq4ger0BuSoA-zBuY7_g0BaYAzTRzglV-w/exec',
 
   /* ---- Verze aplikace (zapisuje se do dat) ------------------------------ */
-  APP_VERSION: '1.1.0',
+  APP_VERSION: '1.2.0',
 
   /* ---- Časování a rozsah testu ------------------------------------------ */
   FIXATION_MS: 500,          // jak dlouho svítí křížek „+“ před slovem (ms)
   PAUSE_SECONDS: 60,         // délka pauzy mezi koly (s)
-  TRIALS_PER_ROUND: 80,      // počet položek v jednom kole
+  TRIALS_PER_ROUND: 40,      // počet položek v jednom kole (celá sada ze stimuli.js)
 
   /* Testovací režim (index.html?test=1) */
   TEST_TRIALS_PER_ROUND: 6,
@@ -55,11 +55,12 @@ window.STROOP_CONFIG = {
     UVOD_POZDRAV:
       'Vítejte. Děkujeme za účast ve výzkumu. Nejprve prosím vyplňte dva údaje.',
 
-    VIDEO_NADPIS: 'Instrukce k testu',
-    VIDEO_HOTOVO: 'Video můžete pustit znovu. Až budete připraveni, klikněte na „Zahájit test“.',
-    VIDEO_CEKANI: 'Pusťte si prosím video. Tlačítko „Zahájit test“ se odemkne po jeho dohrání.',
+    VIDEO_NADPIS: '',   // obrazovka s videem je bez textu, jen video a tlačítko
+    VIDEO_HOTOVO: '',
+    VIDEO_CEKANI: '',
 
-    /* Textové instrukce se zobrazí jen tehdy, když se nepodaří načíst video. */
+    /* Textové instrukce se aktuálně NEZOBRAZUJÍ (na přání výzkumného týmu).
+       Text je tu ponechaný jen pro případ, že by se v budoucnu vracel. */
     INSTRUKCE:
       '<h2>Jak test probíhá</h2>' +
       '<p>Uprostřed obrazovky se vždy objeví slovo, které označuje barvu. ' +
@@ -70,7 +71,7 @@ window.STROOP_CONFIG = {
       '<span style="color:#E53935;font-weight:700">ZELENÁ</span> napsané červeně, klikněte na ČERVENÁ.</p>' +
       '<p>Odpovídejte co nejrychleji a zároveň co nejpřesněji. Před každým slovem ' +
       'se na chvíli objeví křížek „+“, dívejte se na něj.</p>' +
-      '<p>Test má dvě části. Až budete připraveni, klikněte na „Zahájit test“.</p>',
+      '<p>Test má dvě části. Až budete připraveni, klikněte na „Spustit test“.</p>',
 
     PAUZA:
       '<h2>První část je hotová.</h2>' +

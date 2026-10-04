@@ -6,7 +6,7 @@
      2. Pomocné funkce (obrazovky, náhoda, statistika)
      3. Míchání položek s omezeními
      4. Zvuk (odemčení a zvonění)
-     5. Obrazovky průběhu: příprava → úvod → video (→ Zahájit test)
+     5. Obrazovky průběhu: příprava → úvod → video (→ Spustit test)
      6. Kolo testu (křížek, slovo, měření reakčního času)
      7. Pauza mezi koly a konec testu
      8. Ukládání dat (localStorage, CSV, Google Sheets)
@@ -408,10 +408,9 @@
       if (failed) return;
       failed = true;
       try { v.pause(); } catch (e) { /* nic */ }
+      // bez videa se nezobrazuje žádný text, jen tlačítko „Spustit test“
       $('video-wrap').classList.add('hidden');
       $('video-title').textContent = '';
-      $('video-fallback').innerHTML = C.TEXTY.INSTRUKCE;
-      $('video-fallback').classList.remove('hidden');
       hint.textContent = '';
       btn.disabled = false;
     }
@@ -421,7 +420,7 @@
       btn.disabled = false;
       hint.textContent = C.TEXTY.VIDEO_HOTOVO;
     });
-    // „Zahájit test“ → rovnou 1. kolo
+    // „Spustit test“ → rovnou 1. kolo
     btn.addEventListener('click', function () {
       if (btn.disabled || S.phase !== 'video') return;
       try { v.pause(); } catch (e) { /* nic */ }
