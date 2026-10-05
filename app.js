@@ -6,7 +6,7 @@
      2. Pomocné funkce (obrazovky, náhoda, statistika)
      3. Míchání položek s omezeními
      4. Zvuk (odemčení a zvonění)
-     5. Obrazovky průběhu: příprava → úvod → video (→ Spustit test)
+     5. Obrazovky průběhu: příprava → informace → údaje → ukázky → Spustit test
      6. Kolo testu (křížek, slovo, měření reakčního času)
      7. Pauza mezi koly a konec testu
      8. Ukládání dat (localStorage, CSV, Google Sheets)
@@ -61,7 +61,7 @@
 
   // Stav jednoho sezení (jednoho účastníka)
   var S = {
-    phase: 'prep',          // prep | intro | video | instr | round | pause | end | admin
+    phase: 'prep',          // prep | info | intro | demo | start | round | pause | end | admin
     kod: null,
     datumStartu: null,      // ISO čas kliknutí na „Připravit test“
     vek: null,
@@ -338,14 +338,14 @@
       // 3) anonymní kód + čas startu
       S.kod = generateCode();
       S.datumStartu = new Date().toISOString();
-      // 4) úvodní obrazovka
-      showIntro();
+      // 4) úvodní informace
+      showInfo();
     });
 
     show('scr-prep');
   }
 
-  // ---- 1. Úvod a údaje ----------------------------------------------------
+  // ---- 2. Údaje (věk, pohlaví) ----------------------------------------------------
   function showIntro() {
     S.phase = 'intro';
     $('intro-text').textContent = C.TEXTY.UVOD_POZDRAV;
@@ -384,7 +384,7 @@
       S.vek = a;
       S.vekMimoRozsah = (a < 18 || a > 26) ? 1 : 0;
       S.pohlavi = g;
-      showVideo();
+      showDemo(0);
     });
 
     validate();
@@ -392,54 +392,76 @@
     setTimeout(function () { try { age.focus(); } catch (e) { /* nic */ } }, 50);
   }
 
-  // ---- 2. Instruktážní video ---------------------------------------------
-  function showVideo() {
-    S.phase = 'video';
-    $('video-title').textContent = C.TEXTY.VIDEO_NADPIS;
-    var v = $('video');
-    var btn = $('btn-video');
-    var hint = $('video-hint');
-    var failed = false;
-    btn.disabled = true;
-    hint.textContent = C.TEXTY.VIDEO_CEKANI;
+  // ---- 1. Úvodní informace o experimentu --------------------------------
+  function showInfo() {
+    S.phase = 'info';
+    $('info-text').innerHTML = C.TEXTY.INFO;
+    show('scr-info');
+    $('scr-info').scrollTop = 0;
+  }
 
-    // Záložní varianta: video chybí nebo se nenačte → textové instrukce
-    function fallback() {
-      if (failed) return;
-      failed = true;
-      try { v.pause(); } catch (e) { /* nic */ }
-      // bez videa se nezobrazuje žádný text, jen tlačítko „Spustit test“
-      $('video-wrap').classList.add('hidden');
-      $('video-title').textContent = '';
-      hint.textContent = '';
-      btn.disabled = false;
-    }
+  // ---- 3. Ukázky krok za krokem -----------------------------------------
+  // Ukazují vzorové položky a správnou odpověď. Nic se neměří ani neukládá.
+  var demoIndex = 0;
 
-    v.addEventListener('error', fallback);
-    v.addEventListener('ended', function () {
-      btn.disabled = false;
-      hint.textContent = C.TEXTY.VIDEO_HOTOVO;
+  function buildDemoButtons() {
+    var row = $('demo-row');
+    C.BARVY.forEach(function (b) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'answer-btn';
+      btn.textContent = b.label;
+      btn.tabIndex = -1;
+      btn.dataset.key = b.key;
+      row.appendChild(btn);
     });
-    // „Spustit test“ → rovnou 1. kolo
-    btn.addEventListener('click', function () {
-      if (btn.disabled || S.phase !== 'video') return;
-      try { v.pause(); } catch (e) { /* nic */ }
+  }
+
+  function showDemo(i) {
+    var list = C.TEXTY.UKAZKY;
+    if (i >= list.length) { showStart(); return; }
+    S.phase = 'demo';
+    demoIndex = Math.max(0, i);
+    var u = list[demoIndex];
+    $('demo-step').textContent = C.TEXTY.UKAZKA_NADPIS + ' ' + (demoIndex + 1) + ' ze ' + list.length;
+    var stim = $('demo-stim');
+    stim.textContent = BARVA[u.slovo].label;
+    stim.style.color = BARVA[u.barva].hex;
+    var btns = $('demo-row').querySelectorAll('.answer-btn');
+    for (var k = 0; k < btns.length; k++) {
+      btns[k].classList.toggle('correct', btns[k].dataset.key === u.barva);
+    }
+    $('demo-text').innerHTML = u.text;
+    $('btn-demo-back').classList.toggle('hidden', demoIndex === 0);
+    $('btn-demo-next').textContent = demoIndex === list.length - 1 ? 'Pokračovat' : C.TEXTY.UKAZKA_DALSI;
+    show('scr-demo');
+  }
+
+  // ---- 4. Spustit test -----------------------------------------------------
+  function showStart() {
+    S.phase = 'start';
+    $('start-text').innerHTML = C.TEXTY.START_TEXT;
+    show('scr-start');
+  }
+
+  function initFlowButtons() {
+    $('btn-info').addEventListener('click', function () {
+      if (S.phase === 'info') showIntro();
+    });
+    $('btn-demo-next').addEventListener('click', function () {
+      if (S.phase === 'demo') showDemo(demoIndex + 1);
+    });
+    $('btn-demo-back').addEventListener('click', function () {
+      if (S.phase === 'demo') showDemo(demoIndex - 1);
+    });
+    $('btn-start-back').addEventListener('click', function () {
+      if (S.phase === 'start') showDemo(C.TEXTY.UKAZKY.length - 1);
+    });
+    $('btn-start').addEventListener('click', function () {
+      if (S.phase !== 'start') return;
       enableTestProtection();
       startRound(1);
     });
-
-    show('scr-video');
-    try {
-      v.src = C.VIDEO_FILE;
-      v.load();
-      var p = v.play();          // po kliknutí na stránce prohlížeč přehrání dovolí
-      if (p && p.catch) p.catch(function () { /* účastník spustí sám */ });
-    } catch (e) { fallback(); }
-
-    // Pojistka: když se do 10 s nenačte vůbec nic, přejdeme na text
-    setTimeout(function () {
-      if (!failed && v.readyState === 0 && S.phase === 'video') fallback();
-    }, 10000);
   }
 
   /* ======================================================================
@@ -1062,6 +1084,8 @@
     if (ADMIN) { initAdmin(); return; }
 
     buildAnswerButtons();
+    buildDemoButtons();
+    initFlowButtons();
     initPauseButton();
     initGlobalGuards();
     initPrep();

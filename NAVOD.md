@@ -16,7 +16,6 @@ Návod je psaný pro člověka, který neprogramuje. Postupujte krok za krokem.
 | `app.js` | logika testu (není potřeba měnit) |
 | `config.js` | **nastavení** – sem patří URL Google tabulky, časy a texty |
 | `stimuli.js` | pevná sada 40 položek (ID 1–40), stejná pro obě kola, kontrolní součty jsou na konci souboru |
-| `video/instrukce.mp4` | instruktážní video (nahrajete sami; bez něj se zobrazí textové instrukce) |
 | `audio/zvonek.mp3` | nepovinné – vlastní zvonění; když chybí, aplikace zvoní sama |
 | `apps-script/Code.gs` | kód pro Google tabulku |
 
@@ -60,11 +59,10 @@ Listy `polozky`, `souhrn`, `test_polozky` a `test_souhrn` nemusíte zakládat, s
 ## Krok 4: Nahrání na GitHub a zapnutí GitHub Pages
 
 1. Přihlaste se na <https://github.com> a otevřete repozitář **barvond/stroopstest** (když neexistuje: vpravo nahoře **+ → New repository**, název `stroopstest`, **Public**, Create).
-2. Klikněte na **Add file → Upload files** a přetáhněte do okna **všechny soubory a složky** (`index.html`, `style.css`, `app.js`, `config.js`, `stimuli.js`, složky `apps-script`, `video`, případně `audio`, a tento `NAVOD.md`). Struktura složek musí zůstat zachovaná.
+2. Klikněte na **Add file → Upload files** a přetáhněte do okna **všechny soubory a složky** (`index.html`, `style.css`, `app.js`, `config.js`, `stimuli.js`, složku `apps-script`, případně `audio`, a tento `NAVOD.md`). Struktura složek musí zůstat zachovaná.
 3. Dole klikněte na **Commit changes**.
-4. **Video:** soubor se musí jmenovat přesně `instrukce.mp4` a ležet ve složce `video`. Nahrajte ho přes Add file → Upload files (přetáhněte celou složku `video`). Přes webové rozhraní jde nahrát soubor do **25 MB**; větší video zmenšete (např. HandBrake, 720p).
-5. Zapněte Pages: **Settings → Pages**. U „Source“ zvolte **Deploy from a branch**, branch **main**, složka **/ (root)** → **Save**.
-6. Za 1–3 minuty bude web na `https://barvond.github.io/stroopstest/`.
+4. Zapněte Pages: **Settings → Pages**. U „Source“ zvolte **Deploy from a branch**, branch **main**, složka **/ (root)** → **Save**.
+5. Za 1–3 minuty bude web na `https://barvond.github.io/stroopstest/`.
 
 Úprava souboru později: otevřete soubor na GitHubu → tužka (Edit) → upravit → **Commit changes**. Změna se projeví do pár minut (v prohlížeči pak stiskněte Ctrl+F5).
 
@@ -148,7 +146,7 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 2. [ ] Test zvuku: zvonění je slyšet **za zavřenými dveřmi** při hlasitosti, kterou budete používat.
 3. [ ] „Připravit test“ přepne do celé obrazovky.
 4. [ ] Tlačítko Pokračovat u věku a pohlaví je neaktivní, dokud nejsou vyplněné obě položky; věk 14 nebo 100 nejde zadat.
-5. [ ] Video se přehraje se zvukem a „Spustit test“ se odemkne až po dohrání. (Bez videa se zobrazí text instrukcí.)
+5. [ ] Úvodní text se na monitoru v laboratoři vejde celý a ukázky (3 kroky) jsou srozumitelné; tlačítko Zpět funguje.
 6. [ ] Účastník bez pomoci pochopí z instrukcí, že kliká na **barvu písma** (zeptejte se pilotního účastníka).
 7. [ ] Slovo i tlačítka se při testu nehýbou, žlutá je dobře čitelná na monitoru v laboratoři.
 8. [ ] Klik během křížku nic neudělá; dvojklik na odpověď nepřeskočí další slovo.
@@ -173,11 +171,11 @@ V Google tabulce v listech `polozky` i `souhrn` vyfiltrujte sloupec `kod_ucastni
 7. **Stav „odesláno, nepotvrzeno“** (režim `no-cors`) se na konci zobrazuje jako „Data odeslána (bez potvrzení), záloha v počítači ✓“ a admin stránka ho znovu neposílá, aby nevznikaly duplicity.
 8. Odeslání: první pokus + 3 opakování s prodlevami 1,5 s, 4 s a 8 s.
 9. **Kód účastníka** se vygeneruje znovu, kdyby vypadal jako číslo (např. `23456` nebo `2E345` – Excel/Sheets by ho převedly) nebo kolidoval s kódem uloženým na tomto počítači. V tabulce se kód ukládá jako text.
-10. Pokud se video do 10 s vůbec nezačne načítat, zobrazí se textové instrukce (pojistka k události `error`). Video se po zobrazení obrazovky pokusí spustit samo; když to prohlížeč nedovolí, účastník klikne na Přehrát. Tlačítko pro celou obrazovku ve videu je vypnuté, aby video nerozbilo celoobrazovkový režim stránky.
+10. (Zrušeno ve verzi 1.3.0 – video se nepoužívá.)
 11. Varování při zavření stránky platí od „Začít“ do konce testu, na konečné obrazovce už ne.
 12. Klávesnice je během kol a odpočtu zablokovaná; Esc (opuštění celé obrazovky) prohlížeč zablokovat nedovolí – zapíše se jako `opustil_okno`.
 13. CSV obsahuje na konci testu jen položkové řádky (jak zadání požaduje); souhrny jde stáhnout na admin stránce.
 14. Zvonění: syntetický elektrický zvonek 3,5 s (cca 760 Hz, 18 úderů/s) přes Web Audio API; přednostně se použije `audio/zvonek.mp3`, pokud existuje.
 15. Na přípravné obrazovce je kromě ukazatele Sheets a testu zvuku i malý odkaz „Administrace“.
-16. Obrazovka s videem nemá žádný text, jen video a tlačítko „Spustit test“ (to se odemkne po dohrání videa). Když video chybí, je na obrazovce jen tlačítko. Textové instrukce se nezobrazují vůbec (od verze 1.2.0).
+16. Od verze 1.3.0 se nepoužívá video. Průběh: Připravit test → úvodní informace (text výzkumného týmu) → věk a pohlaví → 3 ukázky se zvýrazněnou správnou odpovědí (do dat se nezapisují) → „Spustit test“.
 17. Starší lokální zálohy s časy v ms (verze 1.0.0) se při exportu a dopsání z admin stránky automaticky převedou na sekundy.

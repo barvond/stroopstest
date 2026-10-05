@@ -29,7 +29,15 @@
     </div>
   </section>
 
-  <!-- ============ 1. ÚVOD A ÚDAJE ============ -->
+  <!-- ============ 1. ÚVODNÍ INFORMACE ============ -->
+  <section id="scr-info" class="screen screen-scroll">
+    <div class="panel panel-wide">
+      <div id="info-text" class="instructions"></div>
+      <button id="btn-info" class="btn-main" type="button">Pokračovat</button>
+    </div>
+  </section>
+
+  <!-- ============ 2. ÚDAJE (věk, pohlaví) ============ -->
   <section id="scr-intro" class="screen">
     <div class="panel">
       <p id="intro-text" class="lead"></p>
@@ -54,18 +62,28 @@
     </div>
   </section>
 
-  <!-- ============ 2. INSTRUKTÁŽNÍ VIDEO ============ -->
-  <section id="scr-video" class="screen">
-    <div class="panel panel-wide">
-      <h2 id="video-title"></h2>
-      <div id="video-wrap">
-        <video id="video" controls playsinline preload="auto"
-               controlslist="nodownload nofullscreen noremoteplayback"
-               disablepictureinpicture></video>
+  <!-- ============ 3. UKÁZKY KROK ZA KROKEM ============ -->
+  <section id="scr-demo" class="screen">
+    <div class="demo">
+      <p id="demo-step" class="muted"></p>
+      <div id="demo-stim"></div>
+      <div id="demo-row" class="answer-row"><!-- tlačítka vytvoří app.js --></div>
+      <div id="demo-text" class="instructions demo-text"></div>
+      <div class="demo-nav">
+        <button id="btn-demo-back" class="btn-main btn-secondary" type="button">Zpět</button>
+        <button id="btn-demo-next" class="btn-main" type="button">Další ukázka</button>
       </div>
-      <div id="video-fallback" class="instructions hidden"></div>
-      <p id="video-hint" class="muted"></p>
-      <button id="btn-video" class="btn-main" type="button" disabled>Spustit test</button>
+    </div>
+  </section>
+
+  <!-- ============ 4. SPUSTIT TEST ============ -->
+  <section id="scr-start" class="screen">
+    <div class="panel">
+      <div id="start-text" class="instructions"></div>
+      <div class="demo-nav">
+        <button id="btn-start-back" class="btn-main btn-secondary" type="button">Zpět na ukázky</button>
+        <button id="btn-start" class="btn-main" type="button">Spustit test</button>
+      </div>
     </div>
   </section>
 
@@ -75,7 +93,7 @@
       <div id="fixation">+</div>
       <div id="word"></div>
     </div>
-    <div id="answer-row"><!-- tlačítka vytvoří app.js --></div>
+    <div id="answer-row" class="answer-row"><!-- tlačítka vytvoří app.js --></div>
   </section>
 
   <!-- ============ 5. PAUZA MEZI KOLY ============ -->

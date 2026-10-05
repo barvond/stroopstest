@@ -14,7 +14,7 @@ window.STROOP_CONFIG = {
   SHEETS_URL: 'https://script.google.com/macros/s/AKfycby8iveL87rjLY44QbgDj3Aq5Dz6fZXMDlTUxq4ger0BuSoA-zBuY7_g0BaYAzTRzglV-w/exec',
 
   /* ---- Verze aplikace (zapisuje se do dat) ------------------------------ */
-  APP_VERSION: '1.2.0',
+  APP_VERSION: '1.3.0',
 
   /* ---- Časování a rozsah testu ------------------------------------------ */
   FIXATION_MS: 500,          // jak dlouho svítí křížek „+“ před slovem (ms)
@@ -35,9 +35,6 @@ window.STROOP_CONFIG = {
   BELL_FILE: 'audio/zvonek.mp3',
   BELL_SECONDS: 3.5,
 
-  /* ---- Instruktážní video ---------------------------------------------- */
-  VIDEO_FILE: 'video/instrukce.mp4',
-
   /* ---- Barvy ------------------------------------------------------------
      key: interní název (zapisuje se do dat), label: co se zobrazí,
      hex: barva písma slova uprostřed (tlačítka mají vždy bílý text). Pořadí určuje pořadí tlačítek zleva doprava. */
@@ -53,25 +50,64 @@ window.STROOP_CONFIG = {
   /* ---- Texty obrazovek (lze používat jednoduché HTML: <strong>, <br>, <p>) */
   TEXTY: {
     UVOD_POZDRAV:
-      'Vítejte. Děkujeme za účast ve výzkumu. Nejprve prosím vyplňte dva údaje.',
+      'Nejprve prosím vyplňte dva údaje.',
 
-    VIDEO_NADPIS: '',   // obrazovka s videem je bez textu, jen video a tlačítko
-    VIDEO_HOTOVO: '',
-    VIDEO_CEKANI: '',
 
-    /* Textové instrukce se aktuálně NEZOBRAZUJÍ (na přání výzkumného týmu).
-       Text je tu ponechaný jen pro případ, že by se v budoucnu vracel. */
-    INSTRUKCE:
-      '<h2>Jak test probíhá</h2>' +
-      '<p>Uprostřed obrazovky se vždy objeví slovo, které označuje barvu. ' +
-      'Slovo je napsané nějakou barvou písma.</p>' +
-      '<p>Vaším úkolem je <strong>kliknout na tlačítko s barvou písma</strong>, ' +
-      'ne na to, co slovo znamená.</p>' +
-      '<p>Příklad: když uvidíte slovo ' +
-      '<span style="color:#E53935;font-weight:700">ZELENÁ</span> napsané červeně, klikněte na ČERVENÁ.</p>' +
-      '<p>Odpovídejte co nejrychleji a zároveň co nejpřesněji. Před každým slovem ' +
-      'se na chvíli objeví křížek „+“, dívejte se na něj.</p>' +
-      '<p>Test má dvě části. Až budete připraveni, klikněte na „Spustit test“.</p>',
+    /* Úvodní informace o experimentu (1. obrazovka po „Připravit test“) */
+    INFO:
+      '<h2>Dobrý den, vítáme vás u našeho experimentu.</h2>' +
+      '<p>V následujících minutách budete plnit krátký počítačový úkol zaměřený ' +
+      'na rychlost a přesnost reakcí.</p>' +
+      '<p>Na obrazovce se vám budou postupně zobrazovat názvy barev. Vaším úkolem bude ' +
+      'vždy určit <strong>barvu, kterou je slovo napsané</strong>, nikoliv význam samotného slova.</p>' +
+      '<p>Například pokud se na obrazovce objeví slovo ' +
+      '<span class="ex-word" style="color:#E53935">MODRÁ</span> napsané červenou barvou, ' +
+      'správnou odpovědí je <strong>červená</strong>, protože rozhodující je barva písma, ' +
+      'nikoliv slovo, které vidíte.</p>' +
+      '<p>V některých případech bude význam slova odpovídat jeho barvě, například slovo ' +
+      '<span class="ex-word" style="color:#43A047">ZELENÁ</span> bude napsané zelenou barvou. ' +
+      'V jiných případech se význam slova a barva písma budou lišit. V obou případech je ' +
+      'vaším úkolem určit <strong>pouze barvu písma</strong>.</p>' +
+      '<p>Odpověď budete zadávat kliknutím myší na jednu z možností, které se vám zobrazí ' +
+      'na obrazovce. Snažte se reagovat co nejrychleji a zároveň co nejpřesněji.</p>' +
+      '<p>Experiment se skládá ze dvou částí. V jedné části budete úkol řešit samostatně. ' +
+      'V druhé části budou průběh administrace sledovat dva pozorovatelé. Pozorovatelé s vámi ' +
+      'během řešení nebudou komunikovat ani do úkolu nijak zasahovat. Jejich úkolem bude ' +
+      'pouze sledovat průběh administrace.</p>' +
+      '<p>Mezi jednotlivými částmi experimentu bude zařazena krátká pauza v délce jedné minuty, ' +
+      'během níž se na počítači rozezvoní zvoneček, tak se prosím nelekejte. Slouží pouze jako ' +
+      'upozornění, že jste splnili první polovinu testu.</p>' +
+      '<p>Celý experiment potrvá přibližně 15 až 20 minut. Během řešení se prosím snažte ' +
+      'postupovat co nejpřesněji a zároveň reagovat co nejrychleji podle instrukcí, které dostanete.</p>' +
+      '<p>Získaná data budou zaznamenávána v anonymizované podobě a budou využita výhradně ' +
+      'pro účely tohoto výzkumu.</p>' +
+      '<p>Účast v experimentu je dobrovolná a kdykoli můžete svou účast ukončit bez udání důvodu.</p>' +
+      '<p>Děkujeme vám za účast. Nejprve vyplníte dva krátké údaje a pak si ukážeme, ' +
+      'jak úkol vypadá.</p>',
+
+    /* Ukázky krok za krokem (po vyplnění věku a pohlaví).
+       slovo = co je napsáno, barva = barva písma = správná odpověď.
+       Do dat se nic z ukázek nezapisuje. */
+    UKAZKY: [
+      { slovo: 'modra', barva: 'cervena',
+        text: 'Slovo říká MODRÁ, ale je napsané <strong>červenou</strong> barvou. ' +
+              'Správná odpověď je proto <strong>ČERVENÁ</strong>.' },
+      { slovo: 'zelena', barva: 'zelena',
+        text: 'Slovo ZELENÁ je napsané <strong>zelenou</strong> barvou. Význam slova a barva ' +
+              'písma se shodují, správná odpověď je <strong>ZELENÁ</strong>.' },
+      { slovo: 'zluta', barva: 'fialova',
+        text: 'Slovo říká ŽLUTÁ, ale je napsané <strong>fialovou</strong> barvou. ' +
+              'Správná odpověď je <strong>FIALOVÁ</strong>. Rozhoduje vždy jen barva písma.' }
+    ],
+    UKAZKA_NADPIS: 'Ukázka',          // zobrazí se jako „Ukázka 1 ze 3“
+    UKAZKA_DALSI: 'Další ukázka',
+    UKAZKA_ZPET: 'Zpět',
+    START_TEXT:
+      '<h2>Nyní můžeme začít</h2>' +
+      '<p>Před každým slovem se na chvíli objeví křížek „+“, dívejte se na něj. ' +
+      'Pak klikněte na tlačítko s <strong>barvou písma</strong>, co nejrychleji ' +
+      'a zároveň co nejpřesněji. Během testu se nezobrazuje, zda jste odpověděli správně.</p>' +
+      '<p>Až budete připraveni, klikněte na „Spustit test“.</p>',
 
     PAUZA:
       '<h2>První část je hotová.</h2>' +
